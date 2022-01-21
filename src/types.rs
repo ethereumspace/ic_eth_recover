@@ -25,7 +25,6 @@ impl ToString for Address {
 
 impl FromStr for Address {
     type Err = FromHexError;
-
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Ok(Address(hex::decode(s)?.try_into().unwrap()))
     }
