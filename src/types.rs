@@ -1,4 +1,4 @@
-use ic_cdk::export::candid::CandidType;
+
 use ic_cdk::export::candid::{Deserialize, Nat};
 use elliptic_curve::consts::U32;
 use generic_array::GenericArray;
@@ -7,6 +7,7 @@ use serde::Serialize;
 use std::hash::Hash;
 use std::str::FromStr;
 use tiny_keccak::{Hasher, Keccak};
+use candid::CandidType;
 use k256::{
     ecdsa::{
         recoverable::{Id as RecoveryId, Signature as RecoverableSignature},Signature as K256Signature,
