@@ -16,7 +16,7 @@ use k256::{
 };
 use crate::utils::{hash_message, keccak256, normalize_recovery_id};
 #[derive(Serialize, Deserialize, CandidType, Clone, Hash, Debug, PartialEq, Eq)]
-pub struct Address([u8; 20]);
+pub struct Address(pub [u8; 20]);
 
 impl ToString for Address {
     fn to_string(&self) -> String {
