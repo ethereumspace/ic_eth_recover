@@ -1,22 +1,39 @@
-
-use ic_cdk::export::candid::{Deserialize, Nat};
+use crate::utils::{hash_message, keccak256, normalize_recovery_id};
+use candid::CandidType;
 use elliptic_curve::consts::U32;
 use generic_array::GenericArray;
 use hex::FromHexError;
+use ic_cdk::export::candid::{Deserialize, Nat};
+use k256::{
+    ecdsa::{
+        recoverable::{Id as RecoveryId, Signature as RecoverableSignature},
+        Signature as K256Signature,
+    },
+    EncodedPoint as K256PublicKey,
+};
+use rlp::{Decodable, DecoderError, Encodable, Rlp, RlpStream};
 use serde::Serialize;
 use std::hash::Hash;
 use std::str::FromStr;
 use tiny_keccak::{Hasher, Keccak};
-use candid::CandidType;
-use k256::{
-    ecdsa::{
-        recoverable::{Id as RecoveryId, Signature as RecoverableSignature},Signature as K256Signature,
-    },
-    EncodedPoint as K256PublicKey,
-};
-use crate::utils::{hash_message, keccak256, normalize_recovery_id};
+
 #[derive(Serialize, Deserialize, CandidType, Clone, Hash, Debug, PartialEq, Eq)]
 pub struct Address(pub [u8; 20]);
+
+impl Encodable for Address {
+    fn rlp_append(&self, s: &mut RlpStream) {
+        s.begin_list(1);
+        s.append(&self.0.to_vec());
+    }
+}
+
+impl Decodable for Address {
+    fn decode(rlp: &Rlp<'_>) -> Result<Self, DecoderError> {
+        let addr: Vec<u8> = rlp.val_at(0).unwrap();
+        let addr:[u8;20] = addr.try_into().unwrap();
+        Ok(Address(addr))
+    }
+}
 
 impl ToString for Address {
     fn to_string(&self) -> String {
@@ -36,7 +53,6 @@ impl Address {
         hex::encode(self.0)
     }
 }
-
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct H256(pub [u8; 32]);
